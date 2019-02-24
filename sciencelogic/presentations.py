@@ -2,6 +2,7 @@ class Presentation(object):
     """
     A presentation of a monitor's data
     """
+
     def __init__(self, presentation_dict, client):
         """
         Instantiate a new presentation of a performance counter
@@ -92,4 +93,5 @@ class Presentation(object):
         data = self._client.get(url, params=params)
         # TODO: '0' is just one of the available collection indices.
         # May be all of them should be returned here?
-        return data.json().get('data', {}).get('0', {})
+
+        return data.json().get('data', {})
