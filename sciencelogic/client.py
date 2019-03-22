@@ -62,7 +62,7 @@ class Client(object):
 
         :param details: Get the details of the devices
         :type  details: ``bool``
-        
+
         :param limit: Number of devices to retrieve
         :type details: ``int``
 
@@ -77,6 +77,44 @@ class Client(object):
         else:
             for device in response.json()['result_set']:
                 devices.append(Device(device, device['URI'], self, False))
+        return devices
+
+    def get_devices_by_device_group(self, group_id):
+        """
+        Get list of devices by group_id
+
+        :param group_id: description of the device group
+        :type group_id: str
+
+        :rtype: ``list`` of :int: device ids that match the
+        :param:`group_id` description
+        """
+
+        response = self.get('api/device_group').json()
+
+        groups = response.get("result_set", [])
+
+        found_group = None
+
+        for group in groups:
+            if group["description"] == group_id:
+                found_group = group
+                break
+
+        if found_group is None:
+            print("count not find device group: {}".format(group_id))
+            return []
+
+        device_group = self.get(found_group["URI"]).json()
+
+        devices = []
+
+        for device in device_group["devices"]:
+            # print("device found: {}".format(device))
+            did = int(device.split("/")[-1])
+
+            devices.append(did)
+
         return devices
 
     def get_device(self, device_id):
