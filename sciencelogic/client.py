@@ -79,7 +79,7 @@ class Client(object):
                 devices.append(Device(device, device['URI'], self, False))
         return devices
 
-    def get_devices_by_device_group(self, group_id):
+    def get_devices_by_device_group(self, group_id, limit=100):
         """
         Get list of devices by group_id
 
@@ -90,28 +90,23 @@ class Client(object):
         :param:`group_id` description
         """
 
-        response = self.get('api/device_group').json()
+        response = self.get(
+            'api/device', {'filter': {
+                'device_group': group_id
+            },
+                'limit': limit}).json()
 
-        groups = response.get("result_set", [])
+        print("response: ")
+        print(response)
 
-        found_group = None
-
-        for group in groups:
-            if group["description"] == group_id:
-                found_group = group
-                break
-
-        if found_group is None:
-            print("count not find device group: {}".format(group_id))
-            return []
-
-        device_group = self.get(found_group["URI"]).json()
+        devices_raw = response.get("result_set", [])
 
         devices = []
 
-        for device in device_group["devices"]:
+        for device in devices_raw:
+            uri = device["URI"]
             # print("device found: {}".format(device))
-            did = int(device.split("/")[-1])
+            did = int(uri.split("/")[-1])
 
             devices.append(did)
 
