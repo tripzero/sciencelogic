@@ -38,7 +38,7 @@ class Client(object):
         info = self.get('api/sysinfo')
         return info.json()
 
-    def get(self, uri, params=None):
+    def get(self, uri, params=None, headers=None):
         """
         Get a URI from the API
 
@@ -54,7 +54,8 @@ class Client(object):
             uri = uri[1:]
         return self.session.get('%s/%s' % (self.uri, uri),
                                 params=params,
-                                verify=self.verify)
+                                verify=self.verify,
+                                headers=headers)
 
     def devices(self, details=False, limit=100):
         """
@@ -91,12 +92,19 @@ class Client(object):
         """
 
         response = self.get(
-            'api/device', {'filter': {
-                'device_group': group_id
-            },
-                'limit': limit}).json()
+            'api/device', {'filter.0.device_group': group_id,
+                           'limit': limit},
+            headers={'x-em7-guid-paths': '1'})
 
-        print("response: ")
+        # response = self.get(
+        #    "api/device?filter.0.device_group={}".format(group_id))
+
+        print(dir(response))
+        print(response.url)
+        print(response.status_code)
+
+        response = response.json()
+
         print(response)
 
         devices_raw = response.get("result_set", [])
