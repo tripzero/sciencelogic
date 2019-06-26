@@ -96,16 +96,7 @@ class Client(object):
                            'limit': limit},
             headers={'x-em7-guid-paths': '1'})
 
-        # response = self.get(
-        #    "api/device?filter.0.device_group={}".format(group_id))
-
-        print(dir(response))
-        print(response.url)
-        print(response.status_code)
-
         response = response.json()
-
-        print(response)
 
         devices_raw = response.get("result_set", [])
 
